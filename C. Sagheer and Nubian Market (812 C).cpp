@@ -4,27 +4,24 @@ using namespace std;
 #define ll long long
 #define MAXNODES 1001
 
-
-ll n, money,AnswerItem{0},AnswerCost{0};
-vector<ll>v;//value of the items
-
+ll n, money, AnswerItem{0}, AnswerCost{0};
+vector<ll> v;  // value of the items
 
 ll calc(ll k) {
-    vector<ll>TemporaryCosts = v;
-    for (int i = 0; i < n; i++)
-    {
+    vector<ll> TemporaryCosts = v;
+    for (int i = 0; i < n; i++) {
         TemporaryCosts[i] = TemporaryCosts[i] + (k * (i + 1));
-        //It is  important to not sort now 
-        //Because we will need to sort based on the cummulative cost of the item itself and its index multiplied by the number of items we gonna buy (In other words , we want to sort after we apply the given function which can be found in the question) 
+        // It is important not to sort now because we want to apply the given cost function,
+        // which considers the base cost of the item and its index multiplied by the number of items to buy.
+        // We will sort after applying this function to each item.
     }
-    //Now we can sort
+    // Now we can sort
     sort(TemporaryCosts.begin(), TemporaryCosts.end());
-    //Now we can apply the prefix sum and we will end summing when we reach the number of items that we determined using the binary serach
+    // Now we can apply the prefix sum and sum up to 'k' items
     ll sum = 0;
-    for (int i = 0; i < k; i++)
-    {
+    for (int i = 0; i < k; i++) {
         sum += TemporaryCosts[i];
-        if (sum > money) {//This if condition is used to reduce the number of loops in some cases
+        if (sum > money) {
             return sum;
         }
     }
@@ -33,48 +30,43 @@ ll calc(ll k) {
 
 bool can(ll k) {
     ll sum = calc(k);
+    // Check if the total cost of buying 'k' items is within the budget.
     if (sum <= money) {
         AnswerCost = sum;
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
-
-ll binarySearch(ll start, ll end ) {
+ll binarySearch(ll start, ll end) {
     ll sum = 0;
     while (start <= end) {
-        ll mid = start +(end - start) / 2; //mid == k in the question or the number of the items that we gonna buy
+        ll mid = start + (end - start) / 2;
+        // 'mid' represents the number of items we are considering to buy within the budget (k).
         if (can(mid)) {
             AnswerItem = mid;
             start = mid + 1;
-        }
-        else {
+        } else {
             end = mid - 1;
         }
     }
-    return -1;//If the key is not found
+    return -1;  // If the key is not found
 }
-
-
-
 
 void solve() {
     cin >> n >> money;
     v.resize(n);
-    for (int i = 0; i < n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         cin >> v[i];
     }
   
-    binarySearch(0, n );
+    binarySearch(0, n);
     cout << AnswerItem << " " << AnswerCost;
 }
 
 int main() {
-    int t{ 1 }; //cin >> t;
+    int t{1};  // cin >> t;
     while (t--) {
         solve();
     }
